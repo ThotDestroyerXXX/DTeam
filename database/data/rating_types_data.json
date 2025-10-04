@@ -1,0 +1,10 @@
+[
+  {
+    "title": "Recommended",
+    "image_url": "https://store.akamai.steamstatic.com/public/shared/images/userreviews/icon_thumbsUp_v6.png"
+  },
+  {
+    "title": "Not Recommended",
+    "image_url": "https://store.akamai.steamstatic.com/public/shared/images/userreviews/icon_thumbsDown.png?v=1"
+  }
+]

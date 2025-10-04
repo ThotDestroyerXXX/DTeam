@@ -6,6 +6,14 @@
     },
     "routes": [
         {
+            "src": "/build/(.*)",
+            "dest": "/build/$1"
+        },
+        {
+            "src": "/(.*\\.(?:css|js|png|jpg|jpeg|gif|svg|ico|ttf|woff|woff2|eot|otf|webp|avif|txt))$",
+            "dest": "/public/$1"
+        },
+        {
             "src": "/(.*)",
             "dest": "/api/index.php"
         }
@@ -13,7 +21,7 @@
     "env": {
         "APP_ENV": "production",
         "APP_DEBUG": "true",
-        "APP_URL": "https://yourprojectdomain.com",
+        "APP_URL": "https://d-team.vercel.app/",
         "APP_KEY": "base64:PxXLqW7rRaUc+BobVJoMUCGUkVfGi0PuLFRL47FyRy4=",
 
         "APP_CONFIG_CACHE": "/tmp/config.php",
