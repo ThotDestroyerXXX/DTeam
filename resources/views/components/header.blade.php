@@ -18,14 +18,15 @@
         @endguest
     </div>
     <div class="flex flex-row gap-4 items-center">
-        @can('is-user')
-            <span>Balance: ${{ number_format(Auth::user()->balance, 2) }}</span>
-        @elsecan(['is-admin', 'is-publisher'])
-            {{-- <a href="{{ route('logout') }}">LOGOUT</a> --}}
-        @endcan
+        @auth
+            @can('is-user')
+                <span>Balance: ${{ number_format(Auth::user()->balance, 2) }}</span>
+            @endcan
+            <a href="{{ route('logout') }}">LOGOUT</a>
+        @endauth
         @guest
-            <button><a href="{{ route('login') }}">Login</a></button>
-            <button variant="ghost" class='border border-black'><a href="{{ route('register') }}">Register</a></button>
+            <a href="{{ route('login') }}"><button class="btn btn-primary">Login</button></a>
+            <a href="{{ route('register') }}"><button variant="ghost" class="btn btn-outline">Register</button></a>
         @endguest
     </div>
 </div>

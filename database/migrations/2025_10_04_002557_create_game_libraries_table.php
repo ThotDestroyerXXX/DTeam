@@ -17,6 +17,9 @@ return new class extends Migration
             $table->foreignUlid('game_id')->constrained('games')->onDelete('cascade');
             $table->integer('discount_percentage');
             $table->timestamps();
+
+            // Ensure each game appears only once in a user's library
+            $table->unique(['user_id', 'game_id']);
         });
     }
 

@@ -18,8 +18,6 @@ return new class extends Migration
             $table->text('brief_description');
             $table->text('full_description');
             $table->date('release_date');
-            $table->string('developer');
-            $table->string('publisher');
             $table->bigInteger('price');
             $table->integer('discount_percentage')->default(0);
             $table->foreignId('age_rating_id')->constrained('age_ratings')->onDelete('cascade');

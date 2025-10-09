@@ -24,9 +24,9 @@ class Publisher extends Model
         'user_id',
     ];
 
-    public function user(): HasOne
+    public function user(): BelongsTo
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function games(): HasMany

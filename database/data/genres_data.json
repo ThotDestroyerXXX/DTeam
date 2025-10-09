@@ -1,0 +1,12 @@
+[
+    { "name": "Action", "is_active": true },
+    { "name": "Adventure", "is_active": true },
+    { "name": "Casual", "is_active": true },
+    { "name": "Indie", "is_active": true },
+    { "name": "Massively Multiplayer", "is_active": true },
+    { "name": "Racing", "is_active": true },
+    { "name": "RPG", "is_active": true },
+    { "name": "Simulation", "is_active": true },
+    { "name": "Sports", "is_active": true },
+    { "name": "Strategy", "is_active": true }
+]

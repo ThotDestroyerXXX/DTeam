@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\GameLibrary;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,6 @@ class GameLibrarySeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        GameLibrary::factory(100)->create();
     }
 }

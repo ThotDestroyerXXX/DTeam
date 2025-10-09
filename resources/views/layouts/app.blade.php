@@ -11,11 +11,11 @@
     <title>@yield('title')</title>
 </head>
 
-<body class="flex min-h-screen flex-col">
-    <div class="p-4 flex items-center">
+<body class="flex min-h-screen flex-col bg-base-200">
+    <div class="p-4 flex items-center bg-base-100 shadow">
         @include('components.header')
     </div>
-    <div class="flex p-4 flex-col ">
+    <div class="flex p-4 flex-col max-w-5xl w-full mt-4 mx-auto">
         @yield('content')
     </div>
 </body>

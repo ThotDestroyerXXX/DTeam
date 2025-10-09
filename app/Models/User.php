@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Enums\Role;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasUlids;
@@ -126,5 +126,16 @@ class User extends Authenticatable
     public function gameReviewsWithGame(): HasMany
     {
         return $this->hasMany(GameReview::class)->with(['game', 'ratingType']);
+    }
+
+    public function isProfileComplete(): bool
+    {
+        //check all the fields for profile completion
+        return $this->nickname && $this->real_name && $this->bio && $this->country_id;
+    }
+
+    public function isEmailVerified(): bool
+    {
+        return !is_null($this->email_verified_at);
     }
 }

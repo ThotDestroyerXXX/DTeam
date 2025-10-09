@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignUlid('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignUlid('game_id')->constrained('games')->onDelete('cascade');
             $table->timestamps();
+
+            $table->unique(['user_id', 'game_id']);
         });
     }
 

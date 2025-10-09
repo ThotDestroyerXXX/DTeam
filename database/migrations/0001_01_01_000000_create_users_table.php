@@ -14,8 +14,8 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->string('nickname')->unique();
-            $table->string('real_name');
+            $table->string('nickname')->unique()->nullable();
+            $table->string('real_name')->nullable();
             $table->string('profile_picture_url')->nullable();
             $table->enum('role', array_column(Role::cases(), 'value'))->default(Role::USER->value);
             $table->text('bio')->nullable();
@@ -39,7 +39,7 @@ return new class extends Migration
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            $table->foreignUlid('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
