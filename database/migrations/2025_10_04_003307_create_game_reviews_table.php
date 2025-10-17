@@ -18,6 +18,8 @@ return new class extends Migration
             $table->foreignId('rating_type_id')->constrained('rating_types')->onDelete('cascade');
             $table->text('content');
             $table->timestamps();
+
+            $table->unique(['user_id', 'game_id']);
         });
     }
 

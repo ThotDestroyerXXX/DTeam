@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\VerificationController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\LibraryController;
@@ -18,18 +19,42 @@ use Illuminate\Support\Facades\Route;
 
 // Admin routes
 Route::middleware('can:is-admin')->prefix('admin')->group(function () {
-    Route::get('publishers', [PublisherController::class, 'index'])->name('admin.publishers.index');
-    Route::get('wallet-codes', [WalletCodeController::class, 'index'])->name('admin.wallet-codes.index');
-    Route::get('genres', [GenreController::class, 'index'])->name('admin.genres.index');
-    // Route::get('publishers/create', [PublisherController::class, 'create'])->name('admin.publishers.create');
-    // Route::post('publishers', [PublisherController::class, 'store'])->name('admin.publishers.store');
+    Route::prefix('publishers')->group(function () {
+        Route::get('/', [PublisherController::class, 'index'])->name('admin.publishers.index');
+        Route::get('add', [PublisherController::class, 'add'])->name('admin.publishers.add');
+        // Route::post('/', [PublisherController::class, 'store'])->name('admin.publishers.store');
+    });
+    Route::prefix('wallet-codes')->group(function () {
+        Route::get('/', [WalletCodeController::class, 'index'])->name('admin.wallet-codes.index');
+        Route::get('add', [WalletCodeController::class, 'add'])->name('admin.wallet-codes.add');
+        Route::post('/', [WalletCodeController::class, 'store'])->name('admin.wallet-codes.store');
+    });
+
+    Route::prefix('genres')->group(function () {
+        Route::get('/', [GenreController::class, 'index'])->name('admin.genres.index');
+        Route::get('add', [GenreController::class, 'add'])->name('admin.genres.add');
+        Route::post('/', [GenreController::class, 'store'])->name('admin.genres.store');
+        Route::patch('{genre}', [GenreController::class, 'destroy'])->name('admin.genres.destroy');
+        Route::get('edit/{genre}', [GenreController::class, 'edit'])->name('admin.genres.edit');
+        Route::put('{genre}', [GenreController::class, 'update'])->name('admin.genres.update');
+    });
 });
 
 // publisher routes
+Route::middleware(CheckProfileCompletion::class)->group(function () {
+    Route::middleware('can:is-publisher')->prefix('publisher')->group(function () {
+        Route::get('games', [GameController::class, 'index'])->name('publisher.games.index');
+        Route::get('games/add', [GameController::class, 'add'])->name('publisher.games.add');
+        Route::post('games', [GameController::class, 'store'])->name('publisher.games.store');
+        Route::get('games/{game}/edit', [GameController::class, 'edit'])->name('publisher.games.edit');
+        Route::put('games/{game}', [GameController::class, 'update'])->name('publisher.games.update');
+        Route::delete('games/{game}', [GameController::class, 'destroy'])->name('publisher.games.destroy');
+    });
+});
+
 Route::middleware('can:is-publisher')->prefix('publisher')->group(function () {
-    Route::get('games', [GameController::class, 'index'])->name('publisher.games.index');
     Route::get('profile/edit', [ProfileController::class, 'editPublisher'])->name('publisher.profile.edit');
-    // Route::post('profile', [PublisherController::class, 'updateProfile'])->name('publisher.profile.update');
+    Route::put('profile', [ProfileController::class, 'updatePublisher'])->name('publisher.profile.update');
     // Route::get('password/change', [PublisherController::class, 'changePassword'])->name('publisher.password.change');
     // Route::post('logout', [PublisherController::class, 'logout'])->name('publisher.logout');
 });
@@ -44,8 +69,12 @@ Route::middleware(['auth', 'can:is-user'])->prefix('user')->group(function () {
 Route::middleware(CheckProfileCompletion::class)->group(function () {
     Route::middleware('can:is-user')->prefix('user')->group(function () {
         Route::get('library', [LibraryController::class, 'index'])->name('user.library.index');
+        Route::get('cart', [CartController::class, 'index'])->name('user.cart.index');
+        Route::post('cart/{game}', [CartController::class, 'add'])->name('user.cart.add');
+        Route::delete('cart/{game}', [CartController::class, 'remove'])->name('user.cart.remove');
     });
     Route::get('/', [StoreController::class, 'index'])->name('store.index');
+    Route::get('games/{game}', [GameController::class, 'detail'])->name('games.detail');
 });
 Route::middleware('guest')->group(function () {
     Route::get('login', [LoginController::class, 'index'])->name('login');

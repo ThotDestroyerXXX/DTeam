@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Enums\Role;
 use App\Models\User;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -33,5 +34,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('is-user', function (User $user) {
             return $user->role === Role::USER;
         });
+
+        Paginator::defaultView('vendor.pagination.tailwind');
     }
 }

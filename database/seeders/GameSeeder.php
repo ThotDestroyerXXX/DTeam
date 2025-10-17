@@ -49,8 +49,8 @@ class GameSeeder extends Seeder
                 'brief_description' => substr($originalGame['About the game'] ?? 'No description available', 0, 200) . '...',
                 'full_description' => $originalGame['About the game'] ?? 'No description available',
                 'release_date' => date('Y-m-d', strtotime($originalGame['Release date'] ?? '2023-01-01')),
-                'price' => (int) (($originalGame['Price'] ?? 0) * 100), // Convert to cents/smallest currency unit
-                'discount_percentage' => 0, // Default value
+                'price' => (int) (($originalGame['Price'] ?? 0) * 10), // Convert to cents/smallest currency unit
+                'discount_percentage' => rand(0, 60),
                 'age_rating_id' => $ageRatingIds[array_rand($ageRatingIds)], // Random age rating
                 'publisher_id' => $publisherIds[array_rand($publisherIds)], // Random publisher
                 'created_at' => now(),

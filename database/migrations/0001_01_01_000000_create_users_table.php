@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('nickname')->unique()->nullable();
             $table->string('real_name')->nullable();
             $table->string('profile_picture_url')->nullable();
+            $table->string('profile_picture_file_id')->nullable();
             $table->enum('role', array_column(Role::cases(), 'value'))->default(Role::USER->value);
             $table->text('bio')->nullable();
             $table->string('unique_code')->unique();

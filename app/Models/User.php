@@ -31,6 +31,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'nickname',
         'real_name',
         'profile_picture_url',
+        'profile_picture_file_id',
         'role',
         'bio',
         'unique_code',

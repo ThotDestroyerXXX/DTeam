@@ -15,6 +15,7 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->foreignUlid('game_id')->constrained('games')->onDelete('cascade');
             $table->string('image_url');
+            $table->string('image_file_id')->nullable();
             $table->timestamps();
         });
     }

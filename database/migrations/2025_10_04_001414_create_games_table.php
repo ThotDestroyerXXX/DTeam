@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('brief_description');
             $table->text('full_description');
             $table->date('release_date');
-            $table->bigInteger('price');
+            $table->decimal('price', 10, 2);
             $table->integer('discount_percentage')->default(0);
             $table->foreignId('age_rating_id')->constrained('age_ratings')->onDelete('cascade');
             $table->foreignUlid('publisher_id')->constrained('publishers')->onDelete('cascade');

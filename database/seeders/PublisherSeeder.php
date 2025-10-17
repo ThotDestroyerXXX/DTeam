@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -32,7 +33,11 @@ class PublisherSeeder extends Seeder
         // Process each publisher and assign a random user_id
         foreach ($originalPublishers as $publisher) {
             // Pick a random user_id
-            $randomUserId = $userIds[array_rand($userIds)];
+            $randomUserId = null;
+            do {
+                $randomUserId = $userIds[array_rand($userIds)];
+            } while (in_array($randomUserId, array_column($publishers, 'user_id')));
+
 
             // Add ULID as id and user_id to publisher data
             $publisher['id'] = Str::ulid()->toString();
@@ -42,6 +47,8 @@ class PublisherSeeder extends Seeder
 
             // Add to collection
             $publishers[] = $publisher;
+
+            DB::table('users')->where('id', $randomUserId)->update(['role' => Role::PUBLISHER->value]);
         }
 
         // Insert all publishers with user_id

@@ -21,6 +21,7 @@ class Publisher extends Model
         'name',
         'website',
         'image_url',
+        'image_file_id',
         'user_id',
     ];
 
@@ -32,5 +33,10 @@ class Publisher extends Model
     public function games(): HasMany
     {
         return $this->hasMany(Game::class);
+    }
+
+    public function isProfileComplete(): bool
+    {
+        return !empty($this->name) && !empty($this->website) && !empty($this->image_url);
     }
 }

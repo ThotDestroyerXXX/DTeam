@@ -19,6 +19,7 @@ class CarouselItem extends Component
         public string $description,
         public int $price,
         public array $genres,
+        public string $gameId,
         public int $discount = 0,
     ) {}
 

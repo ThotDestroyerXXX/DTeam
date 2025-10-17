@@ -11,14 +11,15 @@ class StoreController extends Controller
 {
     public function index()
     {
-        if (Auth::check() && Auth::user()->role === Role::ADMIN) {
-            return redirect()->route('admin.publishers.index');
-        }
-        if (Auth::check() && Auth::user()->role === Role::PUBLISHER) {
-            return redirect()->route('publisher.games.index');
-        }
+        // Get the top 10 most popular games based on game_libraries count
+        $popularGames = Game::withCount('gameLibraries')
+            ->orderByDesc('game_libraries_count')
+            ->take(10)
+            ->get();
+
         return view('index', [
-            'recommendedGames' => Game::inRandomOrder()->take(10)->get(),
+            'recommendedGames' => $popularGames,
+            'featuredDiscounts' => Game::whereNotNull('discount_percentage')->orderByDesc('discount_percentage')->take(10)->get(),
         ]);
     }
 }

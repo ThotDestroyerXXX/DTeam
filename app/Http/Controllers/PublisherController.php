@@ -7,11 +7,25 @@ use Illuminate\Http\Request;
 
 class PublisherController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Publisher::query();
+
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        $publishers = $query->paginate(10)->withQueryString();
+
         return view('admin.publishers.index', [
-            'publishers' => Publisher::paginate(10)
+            'publishers' => $publishers
         ]);
+    }
+
+    public function add()
+    {
+        return view('admin.publishers.add');
     }
 
     public function editProfile()

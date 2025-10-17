@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('publishers', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->string('website')->nullable();
             $table->string('image_url')->nullable();
+            $table->string('image_file_id')->nullable();
             $table->foreignUlid('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });

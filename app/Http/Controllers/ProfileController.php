@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\PublisherProfileUpdateRequest;
 use App\Models\Country;
+use App\Traits\ImageKitUtility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +14,7 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    use ImageKitUtility;
     /**
      * Display the user's profile form.
      */
@@ -26,7 +29,7 @@ class ProfileController extends Controller
     public function editPublisher(Request $request): View
     {
         return view('publisher.profile.edit', [
-            'user' => $request->user(),
+            'publisher' => $request->user()->publisher,
         ]);
     }
 
@@ -44,6 +47,53 @@ class ProfileController extends Controller
         $request->user()->save();
 
         return Redirect::route('store.index')->with('status', 'profile-updated');
+    }
+
+    public function updatePublisher(PublisherProfileUpdateRequest $request): RedirectResponse
+    {
+        $inputs = $request->validated();
+
+        $publisher = $request->user()->publisher;
+        $publisher->name = $inputs['name'];
+        $publisher->website = $inputs['website'];
+
+        // Handle image removal if remove_image is checked
+        if (isset($inputs['remove_image']) && $inputs['remove_image'] && $publisher->image_file_id) {
+            // Import the ImageKit utility trait if it's not already included
+            $this->deleteImage($publisher->image_file_id);
+            $publisher->image_url = null;
+            $publisher->image_file_id = null;
+        }
+
+        // Handle new image upload
+        if (isset($inputs['image'])) {
+            // If there's an existing image, delete it first (if not already deleted by remove_image)
+            if ($publisher->image_file_id && !isset($inputs['remove_image'])) {
+                $this->deleteImage($publisher->image_file_id);
+            }
+
+            // Upload new image to ImageKit
+            $image = $inputs['image'];
+            $response = $this->uploadToImageKit(
+                $image,
+                'publisher-' . $publisher->id . '-' . time(),
+                'DTeam/publishers',
+                null,
+                null,
+                false
+            );
+
+            if ($response && $response->error === null && isset($response->result)) {
+                $publisher->image_url = $response->result->url;
+                $publisher->image_file_id = $response->result->fileId;
+            } else {
+                return Redirect::back()->withErrors(['image' => 'Failed to upload image. Please try again.']);
+            }
+        }
+
+        $publisher->save();
+
+        return Redirect::route('publisher.games.index')->with('success', 'Profile updated successfully.');
     }
 
     /**

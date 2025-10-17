@@ -18,6 +18,7 @@ class GameImage extends Model
     protected $fillable = [
         'game_id',
         'image_url',
+        'image_file_id',
     ];
 
     public function game(): BelongsTo

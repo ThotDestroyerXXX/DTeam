@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             GenreSeeder::class,
             GameSeeder::class,
             GameLibrarySeeder::class,
+            GameReviewSeeder::class,
         ]);
     }
 }

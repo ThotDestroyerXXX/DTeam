@@ -73,4 +73,14 @@ class Game extends Model
     {
         return $this->belongsToMany(User::class, 'game_gifts');
     }
+
+    public function isInUserLibrary($userId): bool
+    {
+        return $this->gameLibraries()->where('user_id', $userId)->exists();
+    }
+
+    public function isInUserCart($userId): bool
+    {
+        return $this->gameCarts()->where('user_id', $userId)->exists();
+    }
 }
