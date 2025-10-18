@@ -165,22 +165,42 @@ class GameController extends Controller
 
     public function detail($gameId)
     {
-        $game = Game::with(['publisher', 'ageRating', 'genres', 'gameImages'])->findOrFail($gameId);
+        // Use cached version of the game with eager loaded relationships
+        $game = Game::getCached('detail_' . $gameId, function () use ($gameId) {
+            return Game::with([
+                'publisher',
+                'ageRating',
+                'genres',
+                'gameImages',
+            ])->findOrFail($gameId);
+        }, 3600); // Cache for 1 hour
 
-        // Get recent reviews (from the current month)
         $startOfMonth = now()->startOfMonth();
-        $recentReviews = $game->gameReviews()->with('ratingType')->where('created_at', '>=', $startOfMonth)->get();
+
+        // Cache recent reviews query
+        $recentReviews = Game::getCached('recent_reviews_' . $gameId . '_' . $startOfMonth->format('Y-m'), function () use ($game, $startOfMonth) {
+            return $game->gameReviews()
+                ->with('ratingType')
+                ->where('created_at', '>=', $startOfMonth)
+                ->get();
+        }, 1800); // Cache for 30 minutes
+
         $recentReviewsCount = $recentReviews->count();
 
-        // Get all reviews
-        $allReviews = $game->gameReviews()->with('ratingType')->get();
+        // Cache all reviews query
+        $allReviews = Game::getCached('all_reviews_' . $gameId, function () use ($game) {
+            return $game->gameReviews()
+                ->with('ratingType')
+                ->get();
+        }, 3600); // Cache for 1 hour
+
         $allReviewsCount = $allReviews->count();
 
         // Calculate review statuses
         $recentReviewStatus = $this->calculateReviewStatus($recentReviews);
         $allReviewStatus = $this->calculateReviewStatus($allReviews);
 
-        // Get the review by the authenticated user, if any
+        // Get the review by the authenticated user if authenticated (don't cache this)
         $userReview = null;
         if (Auth::check()) {
             $userId = Auth::id();

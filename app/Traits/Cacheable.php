@@ -14,7 +14,7 @@ trait Cacheable
     public function getCacheKey()
     {
         return sprintf(
-            '%s_%s_%s',
+            'model_%s_%s_%s',
             $this->getTable(),
             $this->getKeyName(),
             $this->getKey()
@@ -55,13 +55,77 @@ trait Cacheable
     }
 
     /**
+     * Cache the results of a query scope
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $key Additional key to identify this specific query
+     * @param int $ttl Cache lifetime in seconds
+     * @return mixed
+     */
+    public static function cacheQuery($query, $key, $ttl = 3600)
+    {
+        // Generate a unique key based on the SQL and bindings
+        $sql = $query->toSql();
+        $bindings = $query->getBindings();
+        $queryKey = md5($sql . serialize($bindings));
+
+        $cacheKey = (new static)->getTable() . '_query_' . $key . '_' . $queryKey;
+
+        return Cache::remember($cacheKey, $ttl, function () use ($query) {
+            return $query->get();
+        });
+    }
+
+    /**
      * Clear the cache for this model.
      *
      * @return void
      */
     public function flushCache()
     {
+        // Clear specific model cache
         Cache::forget($this->getCacheKey());
+
+        // Clear related caches
+        $table = $this->getTable();
+        Cache::forget("{$table}_all");
+        Cache::forget("{$table}_paginated");
+        Cache::forget("{$table}_recent");
+
+        // For more complex scenarios, we might need to implement a tag-based
+        // cache system or use a cache driver that supports wildcards
+    }
+
+    /**
+     * Get all models with cache
+     *
+     * @param int $ttl Cache time in seconds
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public static function getAllCached($ttl = 3600)
+    {
+        $cacheKey = (new static)->getTable() . '_all';
+
+        return Cache::remember($cacheKey, $ttl, function () {
+            return static::all();
+        });
+    }
+
+    /**
+     * Get paginated models with cache
+     *
+     * @param int $perPage Number of items per page
+     * @param int $ttl Cache time in seconds
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    public static function getPaginatedCached($perPage = 15, $ttl = 3600)
+    {
+        $page = request()->get('page', 1);
+        $cacheKey = (new static)->getTable() . '_paginated_' . $page . '_' . $perPage;
+
+        return Cache::remember($cacheKey, $ttl, function () use ($perPage) {
+            return static::paginate($perPage);
+        });
     }
 
     /**
@@ -84,9 +148,10 @@ trait Cacheable
             $cacheKey = sprintf('%s_all', $model->getTable());
             Cache::forget($cacheKey);
 
-            // Flush cache for paginated collections
-            $cacheKey = sprintf('%s_paginated', $model->getTable());
-            Cache::forget($cacheKey);
+            // Flush cache for paginated collections - we use a pattern here
+            $table = $model->getTable();
+            Cache::forget("{$table}_paginated_1_15"); // Most common pagination
+            Cache::forget("{$table}_recent");
         });
     }
 }

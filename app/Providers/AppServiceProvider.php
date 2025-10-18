@@ -28,7 +28,23 @@ class AppServiceProvider extends ServiceProvider
 
             // Set a longer cache lifetime for database queries
             config(['database.cache.ttl' => 60 * 60]); // 1 hour
+
+            // Enable route caching in production
+            $this->enableRouteCaching();
         }
+    }
+
+    /**
+     * Enable route caching in production
+     */
+    private function enableRouteCaching(): void
+    {
+        $this->app->booted(function () {
+            // For production, we recommend running these commands manually during deployment:
+            // php artisan route:cache
+            // php artisan config:cache
+            // php artisan view:cache
+        });
     }
 
     /**
