@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublisherController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\WalletCodeController;
+use App\Http\Controllers\WishlistController;
 use App\Http\Middleware\CheckProfileCompletion;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -43,12 +44,12 @@ Route::middleware('can:is-admin')->prefix('admin')->group(function () {
 // publisher routes
 Route::middleware(CheckProfileCompletion::class)->group(function () {
     Route::middleware('can:is-publisher')->prefix('publisher')->group(function () {
-        Route::get('games', [GameController::class, 'index'])->name('publisher.games.index');
-        Route::get('games/add', [GameController::class, 'add'])->name('publisher.games.add');
-        Route::post('games', [GameController::class, 'store'])->name('publisher.games.store');
-        Route::get('games/{game}/edit', [GameController::class, 'edit'])->name('publisher.games.edit');
-        Route::put('games/{game}', [GameController::class, 'update'])->name('publisher.games.update');
-        Route::delete('games/{game}', [GameController::class, 'destroy'])->name('publisher.games.destroy');
+        Route::get('games', [App\Http\Controllers\Publisher\GameController::class, 'index'])->name('publisher.games.index');
+        Route::get('games/add', [App\Http\Controllers\Publisher\GameController::class, 'add'])->name('publisher.games.add');
+        Route::post('games', [App\Http\Controllers\Publisher\GameController::class, 'store'])->name('publisher.games.store');
+        Route::get('games/{game}/edit', [App\Http\Controllers\Publisher\GameController::class, 'edit'])->name('publisher.games.edit');
+        Route::put('games/{game}', [App\Http\Controllers\Publisher\GameController::class, 'update'])->name('publisher.games.update');
+        Route::delete('games/{game}', [App\Http\Controllers\Publisher\GameController::class, 'destroy'])->name('publisher.games.destroy');
     });
 });
 
@@ -72,6 +73,10 @@ Route::middleware(CheckProfileCompletion::class)->group(function () {
         Route::get('cart', [CartController::class, 'index'])->name('user.cart.index');
         Route::post('cart/{game}', [CartController::class, 'add'])->name('user.cart.add');
         Route::delete('cart/{game}', [CartController::class, 'remove'])->name('user.cart.remove');
+        Route::patch('cart/{gameCart}/toggle-gift', [CartController::class, 'toggleGift'])->name('user.cart.toggle-gift');
+        Route::get('wishlist', [WishlistController::class, 'index'])->name('user.wishlist.index');
+        Route::post('wishlist/{game}', [WishlistController::class, 'add'])->name('user.wishlist.add');
+        Route::delete('wishlist/{game}', [WishlistController::class, 'remove'])->name('user.wishlist.remove');
     });
     Route::get('/', [StoreController::class, 'index'])->name('store.index');
     Route::get('games/{game}', [GameController::class, 'detail'])->name('games.detail');

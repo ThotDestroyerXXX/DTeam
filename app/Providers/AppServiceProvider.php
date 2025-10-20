@@ -18,6 +18,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Register repositories
+        $this->app->bind(
+            \App\Repositories\GameRepositoryInterface::class,
+            \App\Repositories\GameRepository::class
+        );
+
         // Enable query cache in production
         if (app()->environment('production')) {
             // Default string length for database columns

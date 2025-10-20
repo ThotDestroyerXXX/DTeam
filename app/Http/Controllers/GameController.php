@@ -2,210 +2,70 @@
 
 namespace App\Http\Controllers;
 
-use App\Traits\ImageKitUtility;
-use App\Http\Requests\GameStoreRequest;
-use App\Http\Requests\GameUpdateRequest;
-use App\Models\AgeRating;
 use App\Models\Game;
-use App\Models\GameGenre;
 use App\Models\Genre;
-use Exception;
+use App\Repositories\GameRepositoryInterface;
+use App\Services\GameService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
-
+use Illuminate\Support\Facades\Cache;
 
 class GameController extends Controller
 {
+    /**
+     * @var GameRepositoryInterface
+     */
+    protected $gameRepository;
 
-    use ImageKitUtility;
+    /**
+     * @var GameService
+     */
+    protected $gameService;
 
-    public function index()
-    {
-        return view('publisher.games.index', [
-            'publisher' => Auth::user()->publisher,
-        ]);
+    /**
+     * GameController constructor.
+     *
+     * @param GameRepositoryInterface $gameRepository
+     * @param GameService $gameService
+     */
+    public function __construct(
+        GameRepositoryInterface $gameRepository,
+        GameService $gameService
+    ) {
+        $this->gameRepository = $gameRepository;
+        $this->gameService = $gameService;
     }
 
-    public function add()
-    {
-        return view('publisher.games.add', [
-            'ratingTypes' => AgeRating::all(),
-            'genres' => Genre::all()
-        ]);
-    }
-
-    public function store(GameStoreRequest $request)
-    {
-        $validated = $request->validated();
-        $publisher = Auth::user()->publisher;
-
-        $game = $publisher->games()->create([
-            'title' => $validated['title'],
-            'brief_description' => $validated['brief_description'],
-            'full_description' => $validated['full_description'],
-            'price' => $validated['price'],
-            'release_date' => $validated['release_date'],
-            'discount_percentage' => $validated['discount'] ?? 0,
-            'age_rating_id' => $validated['age_rating_id'],
-        ]);
-
-        foreach ($validated['images'] as $image) {
-            $response = $this->uploadToImageKit($image, $image->getClientOriginalName() . '-' . time(), 'DTeam/games', null, null, false);
-
-            // Check if upload was successful
-            if ($response && $response->error === null && isset($response->result)) {
-                // Access the URL from the result object
-                $game->gameImages()->create([
-                    'image_url' => $response->result->url,
-                    'image_file_id' => $response->result->fileId,
-                ]);
-            } else {
-                // Log error or handle failed upload
-                \Illuminate\Support\Facades\Log::error('Image upload failed: ' . json_encode($response));
-                return redirect()->back()->with('error', 'Failed to upload one or more images. Please try again.');
-            }
-        }
-
-        // Attach selected genres to the game
-        if (isset($validated['genres'])) {
-            foreach ($validated['genres'] as $genreId) {
-                GameGenre::create([
-                    'game_id' => $game->id,
-                    'genre_id' => $genreId,
-                ]);
-            }
-        }
-
-        return redirect()->route('publisher.games.index')->with('success', 'Game added successfully.');
-    }
-
-    public function edit($gameId)
-    {
-        $publisher = Auth::user()->publisher;
-        $game = $publisher->games()->with(['genres', 'gameImages'])->findOrFail($gameId);
-
-        return view('publisher.games.edit', [
-            'game' => $game,
-            'ratingTypes' => AgeRating::all(),
-            'genres' => Genre::all(),
-        ]);
-    }
-
-    public function update(GameUpdateRequest $request, $gameId)
-    {
-        // Get validated data
-        $validated = $request->validated();
-
-        $publisher = Auth::user()->publisher;
-        $game = $publisher->games()->findOrFail($gameId);
-
-        // Update game details
-        $game->update([
-            'title' => $validated['title'],
-            'brief_description' => $validated['brief_description'],
-            'full_description' => $validated['full_description'],
-            'price' => $validated['price'],
-            'release_date' => $validated['release_date'],
-            'discount_percentage' => $validated['discount'],
-            'age_rating_id' => $validated['age_rating_id'],
-        ]);
-
-        // Handle image deletions
-        if (isset($validated['delete_images'])) {
-            foreach ($validated['delete_images'] as $imageId) {
-                $image = $game->gameImages()->find($imageId);
-
-                if ($image) {
-                    // Delete from ImageKit if file_id exists
-                    if ($image->image_file_id) {
-                        $this->deleteImage($image->image_file_id);
-                    }
-
-                    // Delete from database
-                    $image->delete();
-                }
-            }
-        }
-
-        // Handle new image uploads
-        if (isset($validated['images'])) {
-            foreach ($validated['images'] as $image) {
-                $response = $this->uploadToImageKit($image, $image->getClientOriginalName() . '-' . time(), 'DTeam/games', null, null, false);
-
-                // Check if upload was successful
-                if ($response && $response->error === null && isset($response->result)) {
-                    // Access the URL from the result object
-                    $game->gameImages()->create([
-                        'image_url' => $response->result->url,
-                        'image_file_id' => $response->result->fileId,
-                    ]);
-                } else {
-                    // Log error or handle failed upload
-                    \Illuminate\Support\Facades\Log::error('Image upload failed: ' . json_encode($response));
-                    return redirect()->back()->with('error', 'Failed to upload one or more images. Please try again.');
-                }
-            }
-        }
-
-        // Update genres (remove all and re-add)
-        $game->genres()->detach();
-
-        if (isset($validated['genres'])) {
-            foreach ($validated['genres'] as $genreId) {
-                GameGenre::create([
-                    'game_id' => $game->id,
-                    'genre_id' => $genreId,
-                ]);
-            }
-        }
-
-        return redirect()->route('publisher.games.index')->with('success', 'Game updated successfully.');
-    }
-
+    /**
+     * Show the game details.
+     *
+     * @param int $gameId
+     * @return \Illuminate\View\View
+     */
     public function detail($gameId)
     {
-        // Use cached version of the game with eager loaded relationships
-        $game = Game::getCached('detail_' . $gameId, function () use ($gameId) {
-            return Game::with([
-                'publisher',
-                'ageRating',
-                'genres',
-                'gameImages',
-            ])->findOrFail($gameId);
-        }, 3600); // Cache for 1 hour
+        // Get the game with eager loaded relationships
+        $game = $this->gameRepository->getGameDetail($gameId);
 
+        // Get recent reviews
         $startOfMonth = now()->startOfMonth();
-
-        // Cache recent reviews query
-        $recentReviews = Game::getCached('recent_reviews_' . $gameId . '_' . $startOfMonth->format('Y-m'), function () use ($game, $startOfMonth) {
-            return $game->gameReviews()
-                ->with('ratingType')
-                ->where('created_at', '>=', $startOfMonth)
-                ->get();
-        }, 1800); // Cache for 30 minutes
-
+        $recentReviews = $this->getRecentReviews($game, $startOfMonth);
         $recentReviewsCount = $recentReviews->count();
 
-        // Cache all reviews query
-        $allReviews = Game::getCached('all_reviews_' . $gameId, function () use ($game) {
-            return $game->gameReviews()
-                ->with('ratingType')
-                ->get();
-        }, 3600); // Cache for 1 hour
-
+        // Get all reviews
+        $allReviews = $this->getAllReviews($game);
         $allReviewsCount = $allReviews->count();
 
         // Calculate review statuses
-        $recentReviewStatus = $this->calculateReviewStatus($recentReviews);
-        $allReviewStatus = $this->calculateReviewStatus($allReviews);
+        $recentReviewStatus = $this->gameService->calculateReviewStatus($recentReviews);
+        $allReviewStatus = $this->gameService->calculateReviewStatus($allReviews);
 
-        // Get the review by the authenticated user if authenticated (don't cache this)
-        $userReview = null;
-        if (Auth::check()) {
-            $userId = Auth::id();
-            $userReview = $game->gameReviews()->where('user_id', $userId)->first();
-        }
+        // Get user-specific data
+        $userReview = $this->getUserReview($game);
+        $isGameInWishlist = $this->isGameInWishlist($game);
+        $isGameOwned = $this->isGameOwned($game);
+        $isGameInCart = $this->isGameInCart($game);
+        $gameCart = $this->getGameCart($game);
 
         return view('games.detail', [
             'game' => $game,
@@ -214,39 +74,144 @@ class GameController extends Controller
             'reviewStatus' => $recentReviewStatus,
             'allReviewsCount' => $allReviewsCount,
             'allReviewStatus' => $allReviewStatus,
+            'isGameInWishlist' => $isGameInWishlist,
+            'isGameOwned' => $isGameOwned,
+            'isGameInCart' => $isGameInCart,
+            'gameCart' => $gameCart,
         ]);
     }
 
     /**
-     * Calculate review status based on the percentage of positive reviews
+     * Search for games.
      *
-     * @param \Illuminate\Database\Eloquent\Collection $reviews
-     * @return string
+     * @param Request $request
+     * @return \Illuminate\View\View
      */
-    private function calculateReviewStatus($reviews)
+    public function search(Request $request)
     {
-        $reviewCount = $reviews->count();
+        $query = $request->input('query');
+        $genre = $request->input('genre');
 
-        // Default to "no reviews" if there are no reviews
-        if ($reviewCount == 0) {
-            return 'No Reviews';
+        $games = $this->gameRepository->searchGames($query, $genre);
+
+        return view('games.search', [
+            'games' => $games,
+            'query' => $query,
+            'selectedGenre' => $genre,
+            'genres' => Genre::all(),
+        ]);
+    }
+
+    /**
+     * List games by genre.
+     *
+     * @param int $genreId
+     * @return \Illuminate\View\View
+     */
+    public function listByGenre($genreId)
+    {
+        $genre = Genre::findOrFail($genreId);
+        $games = $this->gameRepository->getGamesByGenre($genreId);
+
+        return view('games.by-genre', [
+            'genre' => $genre,
+            'games' => $games,
+        ]);
+    }
+
+
+    /**
+     * Get recent reviews with caching.
+     *
+     * @param Game $game
+     * @param \Carbon\Carbon $startOfMonth
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getRecentReviews(Game $game, $startOfMonth)
+    {
+        $cacheKey = 'recent_reviews_' . $game->id . '_' . $startOfMonth->format('Y-m');
+
+        return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($game, $startOfMonth) {
+            return $game->gameReviews()
+                ->with('ratingType')
+                ->where('created_at', '>=', $startOfMonth)
+                ->get();
+        });
+    }
+
+    /**
+     * Get all reviews with caching.
+     *
+     * @param Game $game
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getAllReviews(Game $game)
+    {
+        $cacheKey = 'all_reviews_' . $game->id;
+
+        return Cache::remember($cacheKey, now()->addHour(), function () use ($game) {
+            return $game->gameReviews()
+                ->with('ratingType')
+                ->get();
+        });
+    }
+
+    /**
+     * Get the user's review for a game.
+     *
+     * @param Game $game
+     * @return \App\Models\GameReview|null
+     */
+    private function getUserReview(Game $game)
+    {
+        if (!Auth::check()) {
+            return null;
         }
 
-        // Count positive reviews (where rating_type title is "Recommended")
-        $positiveReviews = $reviews->filter(function ($review) {
-            return $review->ratingType->title === 'Recommended';
-        })->count();
+        return $game->gameReviews()->where('user_id', Auth::id())->first();
+    }
 
-        // Calculate percentage of positive reviews
-        $positivePercentage = ($positiveReviews / $reviewCount) * 100;
+    /**
+     * Check if the game is in the user's wishlist.
+     *
+     * @param Game $game
+     * @return bool
+     */
+    private function isGameInWishlist(Game $game)
+    {
+        return Auth::check() && $game->gameWishlists()->where('user_id', Auth::id())->exists();
+    }
 
-        // Determine review status based on percentage
-        if ($positivePercentage > 70) {
-            return 'Positive';
-        } elseif ($positivePercentage >= 40) {
-            return 'Mixed';
-        } else {
-            return 'Negative';
-        }
+    /**
+     * Check if the user owns the game.
+     *
+     * @param Game $game
+     * @return bool
+     */
+    private function isGameOwned(Game $game)
+    {
+        return Auth::check() && $game->gameLibraries()->where('user_id', Auth::id())->exists();
+    }
+
+    /**
+     * Check if the game is in the user's cart.
+     *
+     * @param Game $game
+     * @return bool
+     */
+    private function isGameInCart(Game $game)
+    {
+        return Auth::check() && $game->gameCarts()->where('user_id', Auth::id())->exists();
+    }
+
+    /**
+     * Get the game cart.
+     *
+     * @param Game $game
+     * @return \App\Models\GameCart|null
+     */
+    private function getGameCart(Game $game)
+    {
+        return Auth::check() ? $game->gameCarts()->where('user_id', Auth::id())->first() : null;
     }
 }

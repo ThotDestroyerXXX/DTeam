@@ -1,6 +1,6 @@
 @can('is-user')
     <div class="flex flex-row gap-2 mb-2 justify-end">
-        <a href="" class='btn btn-primary btn-sm rounded-box'>Wishlist</a>
+        <a href="{{ route('user.wishlist.index') }}" class='btn btn-primary btn-sm rounded-box'>Wishlist</a>
         <a href="" class="btn btn-secondary btn-sm rounded-box btn-outline">Cart</a>
     </div>
 @endcan
