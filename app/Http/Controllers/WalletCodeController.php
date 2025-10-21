@@ -6,6 +6,7 @@ use App\Enums\WalletCodeAmount;
 use App\Http\Requests\WalletCodeRequest;
 use App\Models\WalletCode;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class WalletCodeController extends Controller
 {
@@ -50,5 +51,44 @@ class WalletCodeController extends Controller
         }
 
         return redirect()->route('admin.wallet-codes.index')->with('success', 'Wallet code created successfully.');
+    }
+
+    public function indexUser()
+    {
+        $user = Auth::user();
+        return view('user.wallet-code.index', [
+            'walletBalance' => $user->wallet,
+        ]);
+    }
+
+    public function redeem(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string',
+        ]);
+
+        $code = $request->input('code');
+        $walletCode = WalletCode::where('code', $code)
+            ->where('is_used', false)
+            ->first();
+
+        if (!$walletCode) {
+            return redirect()->back()->with('error', 'Invalid or already redeemed wallet code.');
+        }
+
+        $user = Auth::user();
+
+        // Update wallet code
+        $walletCode->update([
+            'is_used' => true,
+            'used_at' => now(),
+            'user_id' => $user->id,
+        ]);
+
+        // Add amount to user's wallet
+        $user->wallet += $walletCode->amount;
+        $user->save();
+
+        return redirect()->back()->with('success', 'Wallet code redeemed successfully. Your wallet has been updated.');
     }
 }

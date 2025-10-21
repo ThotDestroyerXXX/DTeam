@@ -21,8 +21,8 @@ return new class extends Migration
             $table->enum('role', array_column(Role::cases(), 'value'))->default(Role::USER->value);
             $table->text('bio')->nullable();
             $table->string('unique_code')->unique();
-            $table->bigInteger('wallet')->default(0);
-            $table->bigInteger('point')->default(0);
+            $table->decimal('wallet', 10, 2)->default(0);
+            $table->decimal('point', 10, 2)->default(0);
             $table->string('background_url')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();

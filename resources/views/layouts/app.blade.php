@@ -34,6 +34,11 @@
                 {{ session('warning') }}
             </div>
         @endif
+        @if (session('error'))
+            <div class="alert alert-error mb-4">
+                {{ session('error') }}
+            </div>
+        @endif
         @if (session('success_add_to_cart'))
             @php
                 $gameCart = session('success_add_to_cart');

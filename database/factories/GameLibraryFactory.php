@@ -28,7 +28,7 @@ class GameLibraryFactory extends Factory
         return [
             'user_id' => $userId,
             'game_id' => $gameId,
-            'discount_percentage' => $this->faker->numberBetween(0, 70)
+            'discount_percentage' => fake()->numberBetween(0, 70)
         ];
     }
 }

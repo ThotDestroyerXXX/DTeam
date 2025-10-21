@@ -5,12 +5,27 @@ namespace App\Http\Controllers;
 use App\Models\Game;
 use App\Models\GameCart;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
     public function index()
     {
-        return view('user.cart.index');
+        // Load cart items with their games in a single query using the GameCart model
+        $cartItems = GameCart::where('user_id', Auth::id())->with('game')->get();
+
+        // Calculate total using the already loaded cart items to avoid another query
+        $cartTotal = $cartItems->sum(function ($item) {
+            // Apply any discount if applicable and return directly
+            return $item->game->discount_percentage > 0
+                ? $item->game->price * (1 - $item->game->discount_percentage / 100)
+                : $item->game->price;
+        });
+
+        return view('user.cart.index', [
+            'cartItems' => $cartItems,
+            'cartTotal' => $cartTotal,
+        ]);
     }
 
     public function add(Request $request, $gameId)
@@ -59,5 +74,13 @@ class CartController extends Controller
         $gameCart->save();
 
         return redirect()->back()->with('success_add_to_cart', $gameCart);
+    }
+
+    public function removeAll(Request $request)
+    {
+        $user = $request->user();
+        GameCart::where('user_id', $user->id)->delete();
+
+        return redirect()->back()->with('success', 'All games removed from cart.');
     }
 }

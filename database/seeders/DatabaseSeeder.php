@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             GameSeeder::class,
             GameLibrarySeeder::class,
             GameReviewSeeder::class,
+            FriendListSeeder::class,
         ]);
     }
 }
