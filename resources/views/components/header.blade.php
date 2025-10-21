@@ -25,6 +25,7 @@
                         <div class="dropdown dropdown-end">
                             <span tabindex="0" class="cursor-pointer">{{ Auth::user()->nickname }} ▼</span>
                             <ul tabindex="-1" class="menu dropdown-content bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm">
+                                <li><a href="{{ route('user.library.index') }}">MY LIBRARY</a></li>
                                 <li><a href="{{ route('user.transaction.index') }}">MY TRANSACTIONS</a></li>
                                 <li><a href="{{ route('user.wallet-code.index') }}">REDEEM WALLET CODE</a></li>
                                 <li><a href="{{ route('logout') }}">LOGOUT</a></li>
