@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\FriendController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\LibraryController;
@@ -46,12 +47,12 @@ Route::middleware('can:is-admin')->prefix('admin')->group(function () {
 // publisher routes
 Route::middleware(CheckProfileCompletion::class)->group(function () {
     Route::middleware('can:is-publisher')->prefix('publisher')->group(function () {
-        Route::get('games', [App\Http\Controllers\Publisher\GameController::class, 'index'])->name('publisher.games.index');
-        Route::get('games/add', [App\Http\Controllers\Publisher\GameController::class, 'add'])->name('publisher.games.add');
-        Route::post('games', [App\Http\Controllers\Publisher\GameController::class, 'store'])->name('publisher.games.store');
-        Route::get('games/{game}/edit', [App\Http\Controllers\Publisher\GameController::class, 'edit'])->name('publisher.games.edit');
-        Route::put('games/{game}', [App\Http\Controllers\Publisher\GameController::class, 'update'])->name('publisher.games.update');
-        Route::delete('games/{game}', [App\Http\Controllers\Publisher\GameController::class, 'destroy'])->name('publisher.games.destroy');
+        Route::get('games', [GameController::class, 'index'])->name('publisher.games.index');
+        Route::get('games/add', [GameController::class, 'add'])->name('publisher.games.add');
+        Route::post('games', [GameController::class, 'store'])->name('publisher.games.store');
+        Route::get('games/{game}/edit', [GameController::class, 'edit'])->name('publisher.games.edit');
+        Route::put('games/{game}', [GameController::class, 'update'])->name('publisher.games.update');
+        Route::delete('games/{game}', [GameController::class, 'destroy'])->name('publisher.games.destroy');
     });
 });
 
@@ -71,25 +72,59 @@ Route::middleware(['auth', 'can:is-user'])->prefix('user')->group(function () {
 // user routes that require complete profile
 Route::middleware(CheckProfileCompletion::class)->group(function () {
     Route::middleware('can:is-user')->prefix('user')->group(function () {
+        // library routes
         Route::get('library', [LibraryController::class, 'index'])->name('user.library.index');
-        Route::get('cart', [CartController::class, 'index'])->name('user.cart.index');
-        Route::post('cart/{game}', [CartController::class, 'add'])->name('user.cart.add');
-        Route::delete('cart/{game}', [CartController::class, 'remove'])->name('user.cart.remove');
-        Route::delete('cart', [CartController::class, 'removeAll'])->name('user.cart.remove-all');
-        Route::patch('cart/{gameCart}/toggle-gift', [CartController::class, 'toggleGift'])->name('user.cart.toggle-gift');
-        Route::get('wishlist', [WishlistController::class, 'index'])->name('user.wishlist.index');
-        Route::post('wishlist/{game}', [WishlistController::class, 'add'])->name('user.wishlist.add');
-        Route::delete('wishlist/{game}', [WishlistController::class, 'remove'])->name('user.wishlist.remove');
-        Route::get('checkout', [CheckoutController::class, 'index'])->name('user.checkout.index');
-        Route::post('checkout', [CheckoutController::class, 'process'])->name('user.checkout.process');
+
+        // cart routes
+        Route::prefix('cart')->group(function () {
+            Route::get('/', [CartController::class, 'index'])->name('user.cart.index');
+            Route::post('{game}', [CartController::class, 'add'])->name('user.cart.add');
+            Route::delete('{game}', [CartController::class, 'remove'])->name('user.cart.remove');
+            Route::delete('/', [CartController::class, 'removeAll'])->name('user.cart.remove-all');
+            Route::patch('{gameCart}/toggle-gift', [CartController::class, 'toggleGift'])->name('user.cart.toggle-gift');
+        });
+
+        // wishlist routes
+        Route::prefix('wishlist')->group(function () {
+            Route::get('/', [WishlistController::class, 'index'])->name('user.wishlist.index');
+            Route::post('{game}', [WishlistController::class, 'add'])->name('user.wishlist.add');
+            Route::delete('{game}', [WishlistController::class, 'remove'])->name('user.wishlist.remove');
+        });
+
+        // checkout routes
+        Route::prefix('checkout')->group(function () {
+            Route::get('/', [CheckoutController::class, 'index'])->name('user.checkout.index');
+            Route::post('/', [CheckoutController::class, 'process'])->name('user.checkout.process');
+        });
+
+        // transaction routes
         Route::get('transactions', [TransactionController::class, 'index'])->name('user.transaction.index');
-        Route::get('wallet-codes', [WalletCodeController::class, 'indexUser'])->name('user.wallet-code.index');
-        Route::post('wallet-codes', [WalletCodeController::class, 'redeem'])->name('user.wallet-code.redeem');
+
+        // wallet routes
+        Route::prefix('wallet-codes')->group(function () {
+            Route::get('/', [WalletCodeController::class, 'indexUser'])->name('user.wallet-code.index');
+            Route::post('/', [WalletCodeController::class, 'redeem'])->name('user.wallet-code.redeem');
+        });
+
+        // Friends routes
+        Route::prefix('friends')->group(function () {
+            Route::get('/', [FriendController::class, 'index'])->name('user.friends.index');
+            Route::get('add', [FriendController::class, 'add'])->name('user.friends.add');
+            Route::get('search', [FriendController::class, 'searchFriends'])->name('user.friends.search');
+            Route::get('pending', [FriendController::class, 'pending'])->name('user.friends.pending');
+            Route::post('request/send', [FriendController::class, 'sendRequest'])->name('user.friends.request.send');
+            Route::post('request/accept', [FriendController::class, 'acceptRequest'])->name('user.friends.request.accept');
+            Route::post('request/decline', [FriendController::class, 'declineRequest'])->name('user.friends.request.decline');
+            Route::delete('{user}/request/cancel', [FriendController::class, 'cancelRequest'])->name('user.friends.request.cancel');
+            Route::get('{user}', [FriendController::class, 'show'])->name('user.friends.show');
+            Route::get('{user}/mutual', [FriendController::class, 'mutual'])->name('user.friends.mutual');
+        });
     });
     Route::get('/', [StoreController::class, 'index'])->name('store.index');
     Route::get('games/{game}', [GameController::class, 'detail'])->name('games.detail');
 });
 Route::middleware('guest')->group(function () {
+    // Authentication Routes
     Route::get('login', [LoginController::class, 'index'])->name('login');
     Route::post('login', [LoginController::class, 'authenticate'])->name('login.authenticate');
     Route::get('register', [RegisterController::class, 'index'])->name('register');

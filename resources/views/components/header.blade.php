@@ -28,6 +28,7 @@
                                 <li><a href="{{ route('user.library.index') }}">MY LIBRARY</a></li>
                                 <li><a href="{{ route('user.transaction.index') }}">MY TRANSACTIONS</a></li>
                                 <li><a href="{{ route('user.wallet-code.index') }}">REDEEM WALLET CODE</a></li>
+                                <li><a href="{{ route('user.friends.index', Auth::user()->id) }}">MY FRIENDS</a></li>
                                 <li><a href="{{ route('logout') }}">LOGOUT</a></li>
                             </ul>
                         </div>
@@ -36,7 +37,7 @@
                     </div>
                     {{-- display profile url if not null, display default profile if null --}}
                     <img src="{{ Auth::user()->profile_picture_url ?? asset('storage/default_profile_image.png') }}"
-                        alt="{{ Auth::user()->nickname }}" class="avatar size-10 rounded bg-cover object-center" />
+                        alt="{{ Auth::user()->nickname }}" class="avatar size-10 rounded bg-cover object-center bg-black" />
                 </div>
             @else
                 <a href="{{ route('logout') }}">LOGOUT</a>
