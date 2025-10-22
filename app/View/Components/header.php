@@ -24,7 +24,7 @@ class Header extends Component
      */
     public function render(): View|Closure|string
     {
-        if (!Auth::check()) {
+        if (!Auth::check() || !Auth::user()) {
             return view('components.header', [
                 'friendRequestCount' => 0,
                 'gameGiftCount' => 0,
