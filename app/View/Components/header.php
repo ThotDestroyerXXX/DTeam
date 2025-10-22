@@ -24,14 +24,24 @@ class Header extends Component
      */
     public function render(): View|Closure|string
     {
-        if (!Auth::check() || !Auth::user()) {
-            return view('components.header', [
-                'friendRequestCount' => 0,
-                'gameGiftCount' => 0,
-            ]);
+        // Initialize data with default values
+        $data = [
+            'friendRequestCount' => 0,
+            'gameGiftCount' => 0
+        ];
+
+        // Only try to count if user is authenticated
+        if (Auth::check() && Auth::user()) {
+            $data['friendRequestCount'] = FriendRequest::where('receiver_id', Auth::user()->id)->count();
+
+            // Make sure gameGiftsReceived method exists
+            if (method_exists(Auth::user(), 'gameGiftsReceived')) {
+                $data['gameGiftCount'] = Auth::user()->gameGiftsReceived()->where('status', GameGiftStatus::PENDING)->count();
+            } elseif (method_exists(Auth::user(), 'gameGifts')) {
+                // Try the gameGifts method instead
+                $data['gameGiftCount'] = Auth::user()->gameGifts()->where('status', GameGiftStatus::PENDING)->count();
+            }
         }
-        $data['friendRequestCount'] = FriendRequest::where('receiver_id', Auth::user()->id)->count();
-        $data['gameGiftCount'] = Auth::user()->gameGiftsReceived()->where('status', GameGiftStatus::PENDING)->count();
 
 
         return view('components.header', [
