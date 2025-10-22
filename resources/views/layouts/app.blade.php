@@ -14,7 +14,7 @@
 
 <body class="flex min-h-screen flex-col bg-base-300">
     <div class="p-4 flex items-center bg-base-100 shadow">
-        @include('components.header')
+        <x-header />
     </div>
     <div class="flex p-4 flex-col max-w-5xl w-full mx-auto">
 

@@ -86,7 +86,9 @@ function selectRecipient(cartId, friendId, friendName, profilePictureUrl) {
             <div class="flex items-center justify-between text-sm">
                 <div class="flex items-center gap-1">
                     <span class="font-medium">Gift Recipient:</span>
-                    <span>${friendName}</span>
+                    <span class="flex flex-row gap-1 items-center"><img src="${profilePictureUrl}"
+                            alt="${friendName}'s avatar"
+                            class="w-4 h-4 rounded-full inline-block" />${friendName}</span>
                 </div>
                 <button class="btn btn-link btn-sm"
                     onclick="document.getElementById('select-recipient-modal-${cartId}').showModal()">

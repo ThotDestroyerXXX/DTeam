@@ -8,7 +8,9 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-1">
                     <span class="font-medium">Gift Recipient:</span>
-                    <span class="badge badge-sm">{{ $cart->recipient->nickname }}</span>
+                    <span class="badge badge-sm"><img src="{{ $cart->recipient->profile_picture_url }}"
+                            alt="{{ $cart->recipient->nickname }}'s avatar"
+                            class="w-4 h-4 rounded-full inline-block" />{{ $cart->recipient->nickname }}</span>
                 </div>
                 <button class="text-primary hover:underline text-sm"
                     onclick="document.getElementById('select-recipient-modal-{{ $cart->id }}').showModal()">

@@ -3,13 +3,14 @@
 <div class="w-full min-w-2/3 flex flex-col">
     <div id="main-media-container" class="w-full h-auto rounded flex-shrink-0">
         @if ($game->trailer_url)
-            <video id="main-video" class="size-full object-cover rounded" controls onloadstart="this.volume=0.4">
+            <video id="main-video" class="size-full object-cover rounded aspect-video" controls
+                onloadstart="this.volume=0.4">
                 <source src="{{ $game->trailer_url }}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         @else
             <img id="main-image" src="{{ $game->gameImages->first()->image_url }}" alt="{{ $game->title }} Cover"
-                class="w-full h-auto rounded">
+                class="w-full h-auto rounded aspect-video object-cover">
         @endif
     </div>
 
@@ -18,7 +19,7 @@
         @if ($game->trailer_url)
             <div class="h-20 w-auto rounded flex-shrink-0 relative cursor-pointer media-thumbnail" data-type="video"
                 data-src="{{ $game->trailer_url }}">
-                <video class="size-full object-cover rounded">
+                <video class="size-full object-cover rounded aspect-video">
                     <source src="{{ $game->trailer_url }}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
@@ -35,8 +36,8 @@
         @endif
         @foreach ($game->gameImages as $image)
             <img src="{{ $image->image_url }}" alt="{{ $game->title }}"
-                class="h-20 w-auto rounded flex-shrink-0 cursor-pointer media-thumbnail" data-type="image"
-                data-src="{{ $image->image_url }}">
+                class="h-20 w-auto rounded flex-shrink-0 cursor-pointer media-thumbnail aspect-video object-cover"
+                data-type="image" data-src="{{ $image->image_url }}">
         @endforeach
     </div>
 </div>
@@ -65,7 +66,7 @@
                         // Create video element
                         const video = document.createElement('video');
                         video.id = 'main-video';
-                        video.className = 'size-full object-cover rounded';
+                        video.className = 'size-full object-cover rounded aspect-video';
                         video.controls = true;
                         video.setAttribute('onloadstart', 'this.volume=0.4');
 
@@ -85,7 +86,7 @@
                         img.id = 'main-image';
                         img.src = mediaSrc;
                         img.alt = "{{ $game->title }} Cover";
-                        img.className = 'w-full h-auto rounded';
+                        img.className = 'w-full h-auto rounded aspect-video object-cover';
 
                         mainContainer.appendChild(img);
                     }

@@ -8,16 +8,47 @@
 
         <div class="max-h-[300px] overflow-y-auto">
             @php
-                $friendLists = Auth::user()->friendLists()->with('friend')->get();
+                // Get friends where current user is user_id
+                $currentUserId = Auth::id();
+                $friendsAsUser = Auth::user()->friendLists()->with('friend')->get();
+
+                // Get friends where current user is friend_id
+                $friendsAsFriend = App\Models\FriendList::where('friend_id', $currentUserId)->with('user')->get();
+
+                // Create a collection of all friend users
+                $allFriends = collect();
+
+                // Add friends from first relationship type
+                foreach ($friendsAsUser as $friendship) {
+                    $allFriends->push(
+                        (object) [
+                            'id' => $friendship->friend->id,
+                            'user' => $friendship->friend,
+                        ],
+                    );
+                }
+
+                // Add friends from second relationship type
+                foreach ($friendsAsFriend as $friendship) {
+                    $allFriends->push(
+                        (object) [
+                            'id' => $friendship->user->id,
+                            'user' => $friendship->user,
+                        ],
+                    );
+                }
+
+                // Remove any duplicates by friend id
+                $uniqueFriends = $allFriends->unique('id');
             @endphp
 
-            @if ($friendLists->isEmpty())
+            @if ($uniqueFriends->isEmpty())
                 <p class="text-center py-4">You don't have any friends yet. Add friends
                     to send gifts!</p>
             @else
-                @foreach ($friendLists as $friendList)
+                @foreach ($uniqueFriends as $friendItem)
                     @php
-                        $friend = $friendList->friend;
+                        $friend = $friendItem->user;
                         $isOnWishlist = $friend->gameWishlists()->where('game_id', $cart->game->id)->exists();
                         $alreadyOwns = $friend->gameLibraries()->where('game_id', $cart->game->id)->exists();
                     @endphp

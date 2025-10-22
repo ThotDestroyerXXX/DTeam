@@ -1,7 +1,8 @@
 @props(['game', 'reviewStatus', 'recentReviewsCount', 'allReviewStatus', 'allReviewsCount'])
 
 <div class="w-full max-w-1/3 gap-2 flex flex-col">
-    <img src="{{ $game->gameImages->first()->image_url }}" alt="{{ $game->title }} Cover" class="w-full h-auto rounded">
+    <img src="{{ $game->gameImages->first()->image_url }}" alt="{{ $game->title }} Cover"
+        class="w-full h-auto rounded aspect-video object-cover">
     <p class="text-sm text-justify">{{ $game->brief_description }}</p>
 
     <div class='text-sm'>

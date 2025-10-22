@@ -66,6 +66,16 @@ class CheckoutController extends Controller
                 // Get gift details for this cart item
                 $giftDetail = $giftDetailsByCartId[$item->id] ?? null;
 
+                // make sure the user has not received this game as gift from other users
+                $existingGift = GameGift::where('game_id', $item->game_id)
+                    ->where('receiver_id', $giftDetail['recipient_id'] ?? 0)
+                    ->where('status', GameGiftStatus::PENDING)
+                    ->first();
+
+                if ($existingGift) {
+                    return redirect()->back()->with('error', 'The recipient already has a pending gift for the game "' . $item->game->title . '". Please choose another recipient.');
+                }
+
                 if ($giftDetail) {
                     // Create a gift record
                     GameGift::create([

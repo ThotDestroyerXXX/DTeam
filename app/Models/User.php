@@ -95,6 +95,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(GameGift::class);
     }
 
+    public function gameGiftsReceived(): HasMany
+    {
+        return $this->hasMany(GameGift::class, 'receiver_id');
+    }
+
     public function walletCodes(): HasMany
     {
         return $this->hasMany(WalletCode::class);
