@@ -9,7 +9,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Component;
 
-class Header extends Component
+class Navbar extends Component
 {
     /**
      * Create a new component instance.
@@ -34,17 +34,11 @@ class Header extends Component
         if (Auth::check() && Auth::user()) {
             $data['friendRequestCount'] = FriendRequest::where('receiver_id', Auth::user()->id)->count();
 
-            // Make sure gameGiftsReceived method exists
-            if (method_exists(Auth::user(), 'gameGiftsReceived')) {
-                $data['gameGiftCount'] = Auth::user()->gameGiftsReceived()->where('status', GameGiftStatus::PENDING->value)->count();
-            } elseif (method_exists(Auth::user(), 'gameGifts')) {
-                // Try the gameGifts method instead
-                $data['gameGiftCount'] = Auth::user()->gameGifts()->where('status', GameGiftStatus::PENDING->value)->count();
-            }
+            $data['gameGiftCount'] = Auth::user()->gameGiftsReceived()->where('status', GameGiftStatus::PENDING->value)->count();
         }
 
 
-        return view('components.header', [
+        return view('components.navbar', [
             'friendRequestCount' => $data['friendRequestCount'],
             'gameGiftCount' => $data['gameGiftCount'],
         ]);
