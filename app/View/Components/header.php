@@ -36,10 +36,10 @@ class Header extends Component
 
             // Make sure gameGiftsReceived method exists
             if (method_exists(Auth::user(), 'gameGiftsReceived')) {
-                $data['gameGiftCount'] = Auth::user()->gameGiftsReceived()->where('status', GameGiftStatus::PENDING)->count();
+                $data['gameGiftCount'] = Auth::user()->gameGiftsReceived()->where('status', GameGiftStatus::PENDING->value)->count();
             } elseif (method_exists(Auth::user(), 'gameGifts')) {
                 // Try the gameGifts method instead
-                $data['gameGiftCount'] = Auth::user()->gameGifts()->where('status', GameGiftStatus::PENDING)->count();
+                $data['gameGiftCount'] = Auth::user()->gameGifts()->where('status', GameGiftStatus::PENDING->value)->count();
             }
         }
 
