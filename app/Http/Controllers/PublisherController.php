@@ -32,4 +32,17 @@ class PublisherController extends Controller
     {
         return view('publisher.profile.edit');
     }
+
+    public function detail(Publisher $publisher)
+    {
+
+        // return the publisher detail, combined with the games that the publisher has published
+
+        $games = $publisher->games()->paginate(10);
+
+        return view('publisher.detail', [
+            'publisher' => $publisher,
+            'games' => $games
+        ]);
+    }
 }

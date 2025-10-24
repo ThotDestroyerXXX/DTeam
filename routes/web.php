@@ -128,6 +128,7 @@ Route::middleware(CheckProfileCompletion::class)->group(function () {
         });
     });
     Route::get('/', [StoreController::class, 'index'])->name('store.index');
+    Route::get('/publisher/{publisher}', [PublisherController::class, 'detail'])->name('publisher.detail');
     Route::get('games/{game}', [GameController::class, 'detail'])->name('games.detail');
 });
 Route::middleware('guest')->group(function () {

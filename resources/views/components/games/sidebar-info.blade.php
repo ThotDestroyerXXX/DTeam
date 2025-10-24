@@ -23,7 +23,7 @@
         </div>
         <div class="flex items-center gap-2 mt-1">
             <h3 class="font-medium">Publisher: </h3>
-            <a href="">{{ $game->publisher->name }}</a>
+            <a href="{{ route('publisher.detail', $game->publisher) }}">{{ $game->publisher->name }}</a>
         </div>
         <div class="flex flex-col gap-1">
             <h3 class="font-medium">Genres:</h3>

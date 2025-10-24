@@ -31,7 +31,8 @@
                             <a href="{{ route('games.detail', $game) }}" class="card-title">{{ $game->title }}</a>
                             <div class='flex flex-row justify-between gap-4'>
                                 <div class='flex flex-col text-sm text-gray-600'>
-                                    <p>Publisher: <a href="" class="text-blue-500">{{ $game->publisher->name }}</a>
+                                    <p>Publisher: <a href="{{ route('publisher.detail', $game->publisher) }}"
+                                            class="text-blue-500">{{ $game->publisher->name }}</a>
                                     </p>
                                     <p>Release Date: {{ $game->release_date }}</p>
                                 </div>
