@@ -10,7 +10,6 @@ use App\Http\Controllers\FriendController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\GameGiftController;
 use App\Http\Controllers\GenreController;
-use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublisherController;
@@ -126,10 +125,6 @@ Route::middleware(CheckProfileCompletion::class)->group(function () {
             Route::delete('{user}/request/cancel', 'cancelRequest')->name('user.friends.request.cancel');
             Route::get('{user}', 'show')->name('user.friends.show');
             Route::get('{user}/mutual', 'mutual')->name('user.friends.mutual');
-        });
-
-        Route::prefix('point-shop')->controller(ItemController::class)->group(function () {
-            Route::get('/', 'index')->name('user.point-shop.index');
         });
 
         Route::get('profile/{user}', [ProfileController::class, 'index'])->name('user.profile.index');
