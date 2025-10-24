@@ -16,7 +16,7 @@ class ItemLibrary extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'game_id',
+        'user_id',
         'item_id',
     ];
 

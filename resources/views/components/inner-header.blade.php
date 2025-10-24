@@ -24,7 +24,7 @@
                 </details>
             </li>
             @can('is-user')
-                <li><a href="{{ route('store.index', ['points' => true]) }}">Points Shop</a></li>
+                <li><a href="{{ route('user.point-shop.index') }}">Points Shop</a></li>
             @endcan
         </ul>
     </div>
