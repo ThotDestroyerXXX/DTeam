@@ -13,7 +13,7 @@
         <!-- name of each tab group should be unique -->
         <div class="tabs tabs-border">
             <input type="radio" name="my_tabs_2" class="tab" aria-label="All Games ({{ $libraryGamesCount }})"
-                checked="checked" />
+                @checked(request('tab', 'games') === 'games') />
             <div class="tab-content border-base-300 bg-base-100">
                 <ul class="list">
                     @foreach ($libraryGames as $libraryGame)
@@ -41,7 +41,8 @@
                 </ul>
             </div>
 
-            <input type="radio" name="my_tabs_2" class="tab" aria-label="Reviews ({{ $gameReviewsCount }})" />
+            <input type="radio" name="my_tabs_2" class="tab" aria-label="Reviews ({{ $gameReviewsCount }})"
+                @checked(request('tab') === 'reviews') />
             <div class="tab-content border-base-300 bg-base-100 p-4">
                 <h1 class='font-semibold text-lg'>Recent Reviews by {{ $username }}</h1>
                 <div class="divider m-0 p-0"></div>

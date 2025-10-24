@@ -27,12 +27,13 @@
                             <div class="flex items-center gap-2">
                                 <span class="font-medium">You received a gift from</span>
                                 <div class="avatar">
-                                    <div class="w-8 h-8 rounded-full">
+                                    <a href="{{ route('user.profile.index', $sender) }}" class="w-8 h-8 rounded-full">
                                         <img src="{{ $sender->profile_picture_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($sender->nickname) }}"
                                             alt="{{ $sender->nickname }}'s avatar">
-                                    </div>
+                                    </a>
                                 </div>
-                                <span class="font-semibold">{{ $sender->nickname }}</span>
+                                <a href="{{ route('user.profile.index', $sender) }}"
+                                    class="font-semibold">{{ $sender->nickname }}</a>
                             </div>
 
                             {{-- Accept button could go here if we want to accept all gifts from this sender --}}
@@ -60,7 +61,8 @@
                                                 <div class='flex flex-col'>
                                                     <p class="text-sm font-medium">
                                                         RECEIVED AT</p>
-                                                    <span class="opacity-75">{{ $gift->created_at->format('d M Y') }}</span>
+                                                    <span
+                                                        class="opacity-75">{{ $gift->created_at->format('d M Y') }}</span>
                                                 </div>
                                                 </p>
                                                 @if ($gift->message)

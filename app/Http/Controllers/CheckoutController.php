@@ -99,7 +99,7 @@ class CheckoutController extends Controller
 
         // Deduct the total from the user's wallet
         $user->wallet -= $cartTotal;
-        $user->point += (int) $cartTotal / 100;
+        $user->point += (int) $cartTotal;
         $user->save();
 
         // Clear the user's cart

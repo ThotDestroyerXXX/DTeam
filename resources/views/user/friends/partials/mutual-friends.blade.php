@@ -30,14 +30,14 @@
             <!-- Friend items will go here -->
             @foreach ($friends as $friend)
                 <div class="bg-base-100 p-4 rounded-lg text-sm">
-                    <div class="flex items-center gap-3">
+                    <a href="{{ route('user.profile.index', $friend['friend_id']) }}" class="flex items-center gap-3">
                         <img src="{{ $friend['profile_picture_url'] }}" alt="{{ $friend['nickname'] }}"
                             class="avatar rounded size-12 bg-primary" />
                         <div>
                             <span class="font-semibold">{{ $friend['nickname'] }}</span>
                             <p class=" text-gray-500">Currently Offline</p>
                         </div>
-                    </div>
+                    </a>
                 </div>
             @endforeach
         </div>

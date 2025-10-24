@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Requests\PublisherProfileUpdateRequest;
 use App\Models\Country;
+use App\Models\FriendList;
+use App\Models\GameLibrary;
+use App\Models\User;
 use App\Traits\ImageKitUtility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,6 +18,24 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     use ImageKitUtility;
+
+
+    public function index(User $user): View
+    {
+
+        $query = FriendList::where(function ($q) use ($user) {
+            $q->where('user_id', $user->id)
+                ->orWhere('friend_id', $user->id);
+        });
+
+        return view('user.profile.index', [
+            'user' => $user,
+            'userGames' => GameLibrary::where('user_id', $user->id)->with('game')->limit(3)->orderBy('created_at', 'desc')->get(),
+            'userFriends' => $query->with('friend')->limit(5)->get()
+        ]);
+    }
+
+
     /**
      * Display the user's profile form.
      */

@@ -12,19 +12,22 @@
                 <div class="flex items-center justify-between p-3 bg-base-200 rounded">
                     <div class="flex items-center gap-3">
                         <div class="avatar">
-                            <div class="avatar rounded bg-black size-14">
+                            <a href="{{ route('user.profile.index', $result->id) }}"
+                                class="avatar rounded bg-black size-14">
                                 @if ($result->profile_picture_url)
                                     <img src="{{ $result->profile_picture_url }}"
                                         alt="{{ $result->nickname }}'s avatar" />
                                 @else
-                                    <div class="bg-primary text-primary-content flex items-center justify-center h-full">
+                                    <div
+                                        class="bg-primary text-primary-content flex items-center justify-center h-full">
                                         {{ substr($result->nickname, 0, 1) }}
                                     </div>
                                 @endif
-                            </div>
+                            </a>
                         </div>
                         <div class='text-sm'>
-                            <p class="font-medium">{{ $result->nickname }}</p>
+                            <a href="{{ route('user.profile.index', $result->id) }}"
+                                class="font-medium">{{ $result->nickname }}</a>
                             @if (isset($result->friendship_status) && $result->friendship_status === 'friend')
                                 <div>
                                     You're already friends with this user

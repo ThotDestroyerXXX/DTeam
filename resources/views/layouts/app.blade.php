@@ -12,11 +12,11 @@
     <title>@yield('title')</title>
 </head>
 
-<body class="flex min-h-screen flex-col bg-base-300">
-    <div class="p-4 flex items-center bg-base-100 shadow">
+<body class="flex min-h-screen flex-col bg-base-300 ">
+    <div class="p-4 flex items-center bg-base-100 shadow z-50">
         <x-navbar />
     </div>
-    <div class="flex p-4 flex-col max-w-5xl w-full mx-auto">
+    <div class="flex p-4 flex-col max-w-5xl w-full mx-auto bg-base-300 min-h-screen">
 
         <x-inner-header />
         @if (session('status') === 'profile-updated')

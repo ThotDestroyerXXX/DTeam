@@ -5,9 +5,11 @@
         <ul class="list bg-base-100 shadow-md">
             @forelse ($receivedRequests as $invite)
                 <li class="list-row items-center">
-                    <div><img class="size-14 rounded avatar bg-black" src="{{ $invite->sender->profile_image_url }}"
-                            alt="{{ $invite->sender->nickname }}" /></div>
-                    <div class="font-semibold">{{ $invite->sender->nickname }}</div>
+                    <a href="{{ route('user.profile.index', $invite->sender->id) }}"><img
+                            class="size-14 rounded avatar bg-black" src="{{ $invite->sender->profile_image_url }}"
+                            alt="{{ $invite->sender->nickname }}" /></a>
+                    <a href="{{ route('user.profile.index', $invite->sender->id) }}"
+                        class="font-semibold">{{ $invite->sender->nickname }}</a>
                     <form action="{{ route('user.friends.request.accept', $invite->sender->id) }}" method="POST"
                         class="inline">
                         @csrf
@@ -38,9 +40,11 @@
         <ul class="list bg-base-100 shadow-md">
             @forelse ($sentRequests as $invite)
                 <li class="list-row items-center">
-                    <div><img class="size-14 rounded avatar bg-black" src="{{ $invite->receiver->profile_image_url }}"
-                            alt="{{ $invite->receiver->nickname }}" /></div>
-                    <div class="font-semibold">{{ $invite->receiver->nickname }}</div>
+                    <a href="{{ route('user.profile.index', $invite->receiver->id) }}"><img
+                            class="size-14 rounded avatar bg-black" src="{{ $invite->receiver->profile_image_url }}"
+                            alt="{{ $invite->receiver->nickname }}" /></a>
+                    <a href="{{ route('user.profile.index', $invite->receiver->id) }}"
+                        class="font-semibold">{{ $invite->receiver->nickname }}</a>
                     <form action="{{ route('user.friends.request.cancel', $invite->receiver->id) }}" method="POST"
                         class="inline">
                         @csrf

@@ -8,9 +8,10 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-1">
                     <span class="font-medium">Gift Recipient:</span>
-                    <span class="badge badge-sm"><img src="{{ $cart->recipient->profile_picture_url }}"
+                    <a href="{{ route('user.profile.index', $cart->recipient->id) }}" class="badge badge-sm"><img
+                            src="{{ $cart->recipient->profile_picture_url }}"
                             alt="{{ $cart->recipient->nickname }}'s avatar"
-                            class="w-4 h-4 rounded-full inline-block" />{{ $cart->recipient->nickname }}</span>
+                            class="w-4 h-4 rounded-full inline-block" />{{ $cart->recipient->nickname }}</a>
                 </div>
                 <button class="text-primary hover:underline text-sm"
                     onclick="document.getElementById('select-recipient-modal-{{ $cart->id }}').showModal()">
@@ -26,12 +27,12 @@
 
             <div class="flex items-center">
                 <span class="font-medium mr-1">From:</span>
-                <div class="avatar mr-1">
+                <a href="{{ route('user.profile.index', Auth::user()->id) }}" class="avatar mr-1">
                     <div class="w-6 h-6 rounded-full">
                         <img src="{{ Auth::user()->profile_picture_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->nickname) }}"
                             alt="Your avatar" />
                     </div>
-                </div>
+                </a>
                 <span>{{ Auth::user()->nickname }}</span>
             </div>
         </div>

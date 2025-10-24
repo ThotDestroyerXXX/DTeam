@@ -56,14 +56,15 @@
                     <div
                         class="flex justify-between items-center p-2 hover:bg-base-200 rounded {{ $alreadyOwns ? 'opacity-50' : '' }}">
                         <div class="flex items-center gap-3">
-                            <div class="avatar">
+                            <a href="{{ route('user.profile.index', $friend->id) }}" class="avatar">
                                 <div class="w-12 rounded-full">
                                     <img src="{{ $friend->profile_picture_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($friend->nickname) }}"
                                         alt="{{ $friend->nickname }}'s avatar" />
                                 </div>
-                            </div>
+                            </a>
                             <div>
-                                <p class="font-medium">{{ $friend->nickname }}</p>
+                                <a href="{{ route('user.profile.index', $friend->id) }}"
+                                    class="font-medium">{{ $friend->nickname }}</a>
                                 @if ($isOnWishlist)
                                     <span class="badge badge-accent">On Wishlist</span>
                                 @endif
