@@ -52,9 +52,7 @@ class ProfileController extends Controller
             // For avatar section we load the user's item libraries so the view
             // can display items the user owns (e.g. avatar items)
             if ($user) {
-                $sectionData['itemLibraries'] = ItemLibrary::with('item')
-                    ->where('user_id', $user->id)
-                    ->get();
+                $sectionData['itemLibraries'] = $user->items()->where('type', ItemType::AVATAR->value)->get();
                 $sectionData['user'] = $user;
             } else {
                 $sectionData['itemLibraries'] = collect();
