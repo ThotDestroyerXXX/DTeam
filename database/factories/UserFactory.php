@@ -51,7 +51,7 @@ class UserFactory extends Factory
             'unique_code' => fake()->numerify('##########'),
             'wallet' => fake()->numberBetween(0, 1000),
             'point' => fake()->numberBetween(0, 50),
-            'background_url' => fake()->imageUrl(),
+            'background_url' => null,
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),

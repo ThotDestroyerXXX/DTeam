@@ -47,6 +47,14 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function setupUser(Request $request): View
+    {
+        return view('user.profile.setup', [
+            'user' => $request->user(),
+            'countries' => Country::all(),
+        ]);
+    }
+
     public function editPublisher(Request $request): View
     {
         return view('publisher.profile.edit', [
@@ -67,7 +75,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('store.index')->with('status', 'profile-updated');
+        return redirect()->back()->with('success', 'Profile updated successfully.');
     }
 
     public function updatePublisher(PublisherProfileUpdateRequest $request): RedirectResponse

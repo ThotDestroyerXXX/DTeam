@@ -58,7 +58,7 @@
                         <div class="flex items-center gap-3">
                             <a href="{{ route('user.profile.index', $friend->id) }}" class="avatar">
                                 <div class="w-12 rounded-full">
-                                    <img src="{{ $friend->profile_picture_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($friend->nickname) }}"
+                                    <img src="{{ $friend->profile_picture_url ?? asset('storage/default_profile_image.png') }}"
                                         alt="{{ $friend->nickname }}'s avatar" />
                                 </div>
                             </a>
@@ -77,7 +77,7 @@
 
                         @if (!$alreadyOwns)
                             <button class="btn btn-sm btn-primary"
-                                onclick="selectRecipient('{{ $cart->id }}', '{{ $friend->id }}', '{{ $friend->nickname }}', '{{ $friend->profile_picture_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($friend->nickname) }}')">
+                                onclick="selectRecipient('{{ $cart->id }}', '{{ $friend->id }}', '{{ $friend->nickname }}', '{{ $friend->profile_picture_url ?? asset('storage/default_profile_image.png') }}')">
                                 Select
                             </button>
                         @else

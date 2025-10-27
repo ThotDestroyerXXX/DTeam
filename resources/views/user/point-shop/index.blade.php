@@ -53,7 +53,8 @@
                                                 class="btn btn-primary">Purchase</button>
                                         </form>
                                     @elseif(Auth::user()->items()->where('items.id', $avatar->id)->exists())
-                                        <a href="{{ route('user.profile.edit') }}" class="btn btn-primary">Edit My
+                                        <a href="{{ route('user.profile.edit.section', ['section' => 'avatar']) }}"
+                                            class="btn btn-primary">Edit My
                                             Avatar</a>
                                     @endif
                                     <form method="dialog">
@@ -106,7 +107,8 @@
                                                 class="btn btn-primary">Purchase</button>
                                         </form>
                                     @elseif(Auth::user()->items()->where('item_id', $background->id)->exists())
-                                        <a href="{{ route('user.profile.edit') }}" class="btn btn-primary">Edit My
+                                        <a href="{{ route('user.profile.edit.section', ['section' => 'background']) }}"
+                                            class="btn btn-primary">Edit My
                                             Avatar</a>
                                     @endif
                                     <form method="dialog">

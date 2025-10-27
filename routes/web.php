@@ -22,6 +22,7 @@ use App\Http\Middleware\CheckProfileCompletion;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\User\ProfileController as UserProfileController;
 
 // Admin routes
 Route::middleware('can:is-admin')->prefix('admin')->group(function () {
@@ -67,7 +68,7 @@ Route::middleware('can:is-publisher')->prefix('publisher')->controller(ProfileCo
 
 // Profile edit route must be outside profile completion middleware to avoid infinite redirect
 Route::middleware(['auth', 'can:is-user'])->prefix('user')->controller(ProfileController::class)->group(function () {
-    Route::get('profile/edit', 'editUser')->name('user.profile.edit');
+    Route::get('profile/setup', 'setupUser')->name('user.profile.setup');
     Route::put('profile', 'update')->name('user.profile.update');
 });
 
@@ -133,7 +134,18 @@ Route::middleware(CheckProfileCompletion::class)->group(function () {
             Route::post('purchase/{item}', 'purchase')->name('user.point-shop.purchase');
         });
 
-        Route::get('profile/{user}', [ProfileController::class, 'index'])->name('user.profile.index');
+        Route::prefix('profile')->group(function () {
+            Route::controller(UserProfileController::class)->group(function () {
+                Route::put('avatar', 'updateAvatar')->name('user.profile.update.avatar');
+                Route::put('background', 'updateBackground')->name('user.profile.update.background');
+                Route::put('general', 'updateGeneral')->name('user.profile.update.general');
+                Route::put('password', 'updatePassword')->name('user.profile.update.password');
+                Route::get('edit/{section?}', 'edit')->name('user.profile.edit.section');
+            });
+            Route::controller(ProfileController::class)->group(function () {
+                Route::get('{user}', 'index')->name('user.profile.index');
+            });
+        });
     });
     Route::get('/', [StoreController::class, 'index'])->name('store.index');
     Route::get('/publisher/{publisher}', [PublisherController::class, 'detail'])->name('publisher.detail');
@@ -150,6 +162,10 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('logout', [LogoutController::class, 'logout'])->name('logout');
     Route::get('email/verify', [VerificationController::class, 'show'])->name('verification.notice');
+    // route that accepts a section parameter for deep linking to profile partials
+
+    // Avatar update route (allows PUT or POST for browser forms)
+
 });
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {

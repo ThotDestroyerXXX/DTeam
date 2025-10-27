@@ -28,7 +28,7 @@
                                 <span class="font-medium">You received a gift from</span>
                                 <div class="avatar">
                                     <a href="{{ route('user.profile.index', $sender) }}" class="w-8 h-8 rounded-full">
-                                        <img src="{{ $sender->profile_picture_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($sender->nickname) }}"
+                                        <img src="{{ $sender->profile_picture_url ?? asset('storage/default_profile_image.png') }}"
                                             alt="{{ $sender->nickname }}'s avatar">
                                     </a>
                                 </div>

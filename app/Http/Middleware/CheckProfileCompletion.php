@@ -24,7 +24,7 @@ class CheckProfileCompletion
                 return redirect()->route('publisher.profile.edit')->with('warning', 'Please complete your profile before proceeding.');
             }
         } elseif (Auth::check() && !Auth::user()->isProfileComplete()) {
-            return redirect()->route('user.profile.edit')->with('warning', 'Please complete your profile before proceeding.');
+            return redirect()->route('user.profile.setup')->with('warning', 'Please complete your profile before proceeding.');
         } elseif (Auth::check() && !Auth::user()->hasVerifiedEmail()) {
             return redirect()->route('verification.notice')->with('warning', 'Please verify your email address before proceeding.');
         }

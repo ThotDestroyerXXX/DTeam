@@ -7,8 +7,8 @@
 @section('content')
     <div class='flex flex-col gap-8'>
         <div class='flex flex-row gap-2 items-center'>
-            <img src="{{ $user->profile_picture_url }}" alt="{{ $user->nickname }}"
-                class="avatar rounded size-14 bg-primary" />
+            <img src="{{ $user->profile_picture_url ?? asset('storage/default_profile_image.png') }}"
+                alt="{{ $user->nickname }}" class="avatar rounded size-14 bg-primary" />
             <span class="font-semibold text-xl">{{ $user->nickname }}</span>
         </div>
 

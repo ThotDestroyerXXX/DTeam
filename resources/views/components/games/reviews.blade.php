@@ -7,8 +7,8 @@
     @foreach ($game->gameReviews as $review)
         <div class="bg-base-100 flex flex-row gap-2 mb-2 p-4 rounded-lg">
             <a href="{{ route('user.profile.index', $review->user->id) }}" class="flex flex-row w-1/4 gap-2">
-                <img src="{{ $review->user->profile_picture_url }}" alt="{{ $review->user->name }} Profile"
-                    class="avatar size-16 rounded shrink-0 bg-black" />
+                <img src="{{ $review->user->profile_picture_url ?? asset('storage/default_profile_image.png') }}"
+                    alt="{{ $review->user->name }} Profile" class="avatar size-16 rounded shrink-0 bg-black" />
                 <div class="flex flex-col">
                     <span class="font-medium text-sm">{{ $review->user->nickname }}</span>
                     <span class="text-xs">{{ $review->user->gameReviews->count() }} reviews</span>

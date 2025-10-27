@@ -9,7 +9,7 @@
                 <div class="flex items-center gap-1">
                     <span class="font-medium">Gift Recipient:</span>
                     <a href="{{ route('user.profile.index', $cart->recipient->id) }}" class="badge badge-sm"><img
-                            src="{{ $cart->recipient->profile_picture_url }}"
+                            src="{{ $cart->recipient->profile_picture_url ?? asset('storage/default_profile_image.png') }}"
                             alt="{{ $cart->recipient->nickname }}'s avatar"
                             class="w-4 h-4 rounded-full inline-block" />{{ $cart->recipient->nickname }}</a>
                 </div>
@@ -29,7 +29,7 @@
                 <span class="font-medium mr-1">From:</span>
                 <a href="{{ route('user.profile.index', Auth::user()->id) }}" class="avatar mr-1">
                     <div class="w-6 h-6 rounded-full">
-                        <img src="{{ Auth::user()->profile_picture_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->nickname) }}"
+                        <img src="{{ Auth::user()->profile_picture_url ?? asset('storage/default_profile_image.png') }}"
                             alt="Your avatar" />
                     </div>
                 </a>

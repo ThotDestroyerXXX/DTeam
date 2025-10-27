@@ -15,7 +15,7 @@
                             <a href="{{ route('user.profile.index', $result->id) }}"
                                 class="avatar rounded bg-black size-14">
                                 @if ($result->profile_picture_url)
-                                    <img src="{{ $result->profile_picture_url }}"
+                                    <img src="{{ $result->profile_picture_url ?? asset('storage/default_profile_image.png') }}"
                                         alt="{{ $result->nickname }}'s avatar" />
                                 @else
                                     <div

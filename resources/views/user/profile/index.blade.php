@@ -8,8 +8,8 @@
     <div class='flex flex-col gap-6 text-sm'>
         <div class="flex flex-row justify-between gap-4">
             <div class="flex flex-row gap-4 w-[70%] h-full">
-                <img src="{{ $user->profile_picture_url }}" alt="{{ $user->nickname }}"
-                    class="avatar size-32 rounded bg-black object-cover object-center" />
+                <img src="{{ $user->profile_picture_url ?? asset('storage/default_profile_image.png') }}"
+                    alt="{{ $user->nickname }}" class="avatar size-32 rounded bg-black object-cover object-center shrink-0" />
                 <div class="flex flex-col justify-between">
                     <div class="flex flex-col">
                         <h1 class="text-lg font-bold">{{ $user->nickname }}</h1>
@@ -26,7 +26,8 @@
 
                 </div>
                 @if (Auth::id() === $user->id)
-                    <a href="{{ route('user.profile.edit', $user->id) }}" class="btn btn-secondary btn-sm">Edit
+                    <a href="{{ route('user.profile.edit.section', ['section' => 'general']) }}"
+                        class="btn btn-secondary btn-sm">Edit
                         Profile</a>
                 @endif
             </div>
@@ -40,7 +41,7 @@
                     <ul class="list">
                         @foreach ($userGames as $userGame)
                             <li class="list-row">
-                                <div><img class="h-32 aspect-video rounded"
+                                <div><img class="h-32 aspect-video rounded "
                                         src="{{ $userGame->game->gameImages->first()->image_url }}"
                                         alt="{{ $userGame->game->name }}" />
                                 </div>
@@ -85,7 +86,7 @@
                                     <a href="{{ route('user.profile.index', $friend->friend->id) }}"
                                         class='flex flex-row gap-2 items-center'>
                                         <div class="avatar size-10 rounded overflow-hidden">
-                                            <img src="{{ $friend->friend->profile_picture_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($friend->nickname) }}"
+                                            <img src="{{ $friend->friend->profile_picture_url ?? asset('storage/default_profile_image.png') }}"
                                                 alt="{{ $friend->nickname }}">
                                         </div>
                                         <span class="text-sm text-gray-500">{{ $friend->friend->nickname }}</span>

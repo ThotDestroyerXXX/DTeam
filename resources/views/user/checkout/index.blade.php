@@ -14,7 +14,7 @@
                 {{-- Store current user data for JS --}}
                 <input type="hidden" id="current-user-name" value="{{ Auth::user()->nickname }}">
                 <input type="hidden" id="current-user-picture"
-                    value="{{ Auth::user()->profile_picture_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->nickname) }}">
+                    value="{{ Auth::user()->profile_picture_url ?? asset('storage/default_profile_image.png') }}">
 
                 <div class="flex flex-row gap-4">
                     {{-- Cart Items Section --}}
