@@ -35,7 +35,7 @@ class RegisterController extends Controller
         Auth::login($user);
 
         // Redirect to a desired location
-        return redirect()->route('user.profile.edit');
+        return redirect()->route('user.profile.setup');
     }
 
     /**

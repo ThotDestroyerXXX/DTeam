@@ -12,15 +12,6 @@
             @method('PUT')
 
             <div class="flex justify-between flex-col md:flex-row gap-6">
-                <div class="flex flex-col gap-6 items-center">
-                    <div class="avatar">
-                        <div class="w-24 rounded">
-                            <img src="{{ $user->profile_picture_url ?? asset('storage/default_profile_image.png') }}"
-                                alt="Profile" class='bg-cover bg-center' />
-                        </div>
-                    </div>
-                    <button class="btn btn-outline btn-sm">Change Profile Picture</button>
-                </div>
                 <div class="flex flex-col gap-6 flex-1">
                     <label class="input w-full" for="nickname">
                         <span class="label">Nickname</span>

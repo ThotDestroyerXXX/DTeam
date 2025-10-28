@@ -54,6 +54,7 @@
                 <div class="card-actions w-full">
                     <button class="btn btn-primary btn-block" type="submit">Login</button>
                 </div>
+                <a href="{{ route('password.index') }}" class='text-sm text-center link'>Forgot Password?</a>
             </form>
         </div>
     </div>

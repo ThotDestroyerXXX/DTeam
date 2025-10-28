@@ -19,6 +19,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WalletCodeController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Middleware\CheckProfileCompletion;
+use App\Http\Controllers\PasswordController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -157,6 +158,14 @@ Route::middleware('guest')->group(function () {
     Route::post('login', [LoginController::class, 'authenticate'])->name('login.authenticate');
     Route::get('register', [RegisterController::class, 'index'])->name('register');
     Route::post('register', [RegisterController::class, 'register'])->name('register.perform');
+
+    // Forgot password / OTP flow (guest only)
+    Route::prefix('forgot-password')->controller(PasswordController::class)->group(function () {
+        Route::get('/', 'index')->name('password.index');
+        Route::post('/', 'sendResetLinkEmail')->name('password.email');
+        Route::get('/{token}', 'showResetForm')->name('password.reset');
+        Route::post('/reset', 'resetPassword')->name('password.update');
+    });
 });
 
 Route::middleware('auth')->group(function () {
@@ -179,3 +188,10 @@ Route::post('/email/verification-notification', function (Request $request) {
 
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+Route::middleware('guest')->prefix('forgot-password')->controller(PasswordController::class)->group(function () {
+    Route::get('/', 'index')->name('password.index');
+    Route::post('/', 'sendResetLinkEmail')->name('password.email');
+    Route::get('/{token}', 'showResetForm')->name('password.reset');
+    Route::post('/reset', 'resetPassword')->name('password.update');
+});
