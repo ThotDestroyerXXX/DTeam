@@ -30,7 +30,7 @@ Route::middleware('can:is-admin')->prefix('admin')->group(function () {
     Route::prefix('publishers')->controller(PublisherController::class)->group(function () {
         Route::get('/', 'index')->name('admin.publishers.index');
         Route::get('add', 'add')->name('admin.publishers.add');
-        // Route::post('/', 'store')->name('admin.publishers.store');
+        Route::post('/', 'store')->name('admin.publishers.store');
     });
     Route::prefix('wallet-codes')->controller(WalletCodeController::class)->group(function () {
         Route::get('/', 'index')->name('admin.wallet-codes.index');
